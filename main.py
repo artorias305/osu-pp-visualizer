@@ -24,7 +24,7 @@ def create_bar_chart(names, pps):
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.savefig('bar_chart.png')
-    plt.show()
+    plt.close()
 
 def create_line_chart(names, pps):
     plt.figure(figsize=(8, 5))
@@ -35,14 +35,14 @@ def create_line_chart(names, pps):
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.savefig('line_chart.png')
-    plt.show()
+    plt.close()
 
 def create_pie_chart(names, pps):
     plt.figure(figsize=(8, 5))
     plt.pie(pps, labels=names, autopct="%1.1f%%", colors=['skyblue', 'lightcoral', 'lightgreen', 'gold', 'plum'])
     plt.title('PP Pie Chart')
     plt.savefig('pie_chart.png')
-    plt.show()
+    plt.close()
 
 def create_scatter_plot(names, pps):
     plt.figure(figsize=(8, 5))
@@ -54,21 +54,26 @@ def create_scatter_plot(names, pps):
     plt.title('PP Scatter Plot')
     plt.grid(True, linestyle='--', alpha=0.7)
     plt.savefig('scatter_plot.png')
-    plt.show()
+    plt.close()
 
 names = []
 pps = []
 
+while True:
+    try:
+        n_players = int(input("Enter the number of players to plot (max 50): "))
+        if 1 <= n_players <= 50:
+            break
+        else:
+            print("Please enter a number between 1 and 50")
+    except ValueError:
+        print("Please enter a valid number")
 
-
-while n < 50:
+for n in range(n_players):
     name = top50.ranking[n].user.username
     pp = top50.ranking[n].pp
-
     names.append(name)
     pps.append(pp)
-
-    n = n + 1
 
 create_bar_chart(names, pps)
 create_line_chart(names, pps)
