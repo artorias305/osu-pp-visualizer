@@ -23,6 +23,7 @@ def create_bar_chart(names, pps):
     plt.title('Player X PP')
     plt.xticks(rotation=45)
     plt.tight_layout()
+    plt.savefig('bar_chart.png')
     plt.show()
 
 def create_line_chart(names, pps):
@@ -33,12 +34,14 @@ def create_line_chart(names, pps):
     plt.title('Player X PP')
     plt.xticks(rotation=45)
     plt.tight_layout()
+    plt.savefig('line_chart.png')
     plt.show()
 
 def create_pie_chart(names, pps):
     plt.figure(figsize=(8, 5))
     plt.pie(pps, labels=names, autopct="%1.1f%%", colors=['skyblue', 'lightcoral', 'lightgreen', 'gold', 'plum'])
     plt.title('PP Pie Chart')
+    plt.savefig('pie_chart.png')
     plt.show()
 
 def create_scatter_plot(names, pps):
@@ -50,6 +53,7 @@ def create_scatter_plot(names, pps):
     plt.ylabel('PP')
     plt.title('PP Scatter Plot')
     plt.grid(True, linestyle='--', alpha=0.7)
+    plt.savefig('scatter_plot.png')
     plt.show()
 
 names = []
