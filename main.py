@@ -4,6 +4,7 @@ import numpy as np
 from dotenv import load_dotenv
 import os
 import random
+import questionary
 
 load_dotenv()
 
@@ -17,22 +18,23 @@ top50 = api.ranking("osu", "performance")
 def generate_colors(n):
     return ["#" + ''.join(random.choices('0123456789ABCDEF', k=6)) for _ in range(n)]
 
-def create_bar_chart(names, pps, save=True):
+def create_bar_chart(names, pps, save=True, start_at_zero=True):
     plt.figure(figsize=(8, 5))
     plt.bar(names, pps, color='skyblue')
     plt.xlabel('Player Name')
     plt.ylabel('PP')
     plt.title('Player X PP')
-    plt.xticks(rotation=90, ha='right')
+    plt.xticks(rotation=90)
     plt.grid(True, linestyle='--', alpha=0.7)
-    plt.ylim(0, max(pps) * 1.1)
+    if start_at_zero:
+        plt.ylim(0, max(pps) * 1.1)
     plt.tight_layout()
     if save:
         plt.savefig('bar_chart.png')
     else:
         plt.show()
 
-def create_line_chart(names, pps, save=True):
+def create_line_chart(names, pps, save=True, start_at_zero=True):
     plt.figure(figsize=(8, 5))
     plt.plot(names, pps, marker='o', linestyle='-', color='green')
     plt.xlabel('Player Name')
@@ -40,7 +42,8 @@ def create_line_chart(names, pps, save=True):
     plt.title('Player X PP')
     plt.xticks(rotation=90)
     plt.grid(True, linestyle='--', alpha=0.7)
-    plt.ylim(0, max(pps) * 1.1)
+    if start_at_zero:
+        plt.ylim(0, max(pps) * 1.1)
     plt.tight_layout()
     if save:
         plt.savefig('line_chart.png')
@@ -56,16 +59,17 @@ def create_pie_chart(names, pps, save=True):
     else:
         plt.show()
 
-def create_scatter_plot(names, pps, save=True):
+def create_scatter_plot(names, pps, save=True, start_at_zero=True):
     plt.figure(figsize=(8, 5))
     x = np.arange(len(names))
     plt.scatter(x, pps, color=generate_colors(len(names)), edgecolors='black', s=100)
-    plt.xticks(x, names, rotation=90, ha='right')
+    plt.xticks(x, names, rotation=90)
     plt.xlabel('Player Name')
     plt.ylabel('PP')
     plt.title('PP Scatter Plot')
     plt.grid(True, linestyle='--', alpha=0.7)
-    plt.ylim(0, max(pps) * 1.1)
+    if start_at_zero:
+        plt.ylim(0, max(pps) * 1.1)
     plt.grid(True, linestyle='--', alpha=0.7)
     if save:
         plt.savefig('scatter_plot.png')
@@ -75,15 +79,11 @@ def create_scatter_plot(names, pps, save=True):
 names = []
 pps = []
 
-while True:
-    try:
-        n_players = int(input("Enter the number of players to plot (max 50): "))
-        if 1 <= n_players <= 50:
-            break
-        else:
-            print("Please enter a number between 1 and 50")
-    except ValueError:
-        print("Please enter a valid number")
+n_players = questionary.text(
+    "Enter the number of players to plot (max 50):",
+    validate=lambda text: text.isdigit() and 1 <= int(text) <= 50
+).ask()
+n_players = int(n_players)
 
 for n in range(n_players):
     name = top50.ranking[n].user.username
@@ -91,7 +91,10 @@ for n in range(n_players):
     names.append(name)
     pps.append(pp)
 
-save_option = input("Do you want to save the charts? (yes/no): ").strip().lower() == 'yes'
+save_option = questionary.select(
+    "Do you wnat to save or just display the charts?",
+    choices=["Save", "Display"]
+).ask() == "Save"
 
 create_bar_chart(names, pps, save=save_option)
 create_line_chart(names, pps, save=save_option)
