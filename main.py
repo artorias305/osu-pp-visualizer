@@ -1,12 +1,18 @@
 import matplotlib.pyplot as plt
+import seaborn as sns
 from ossapi import Ossapi
 import numpy as np
 from dotenv import load_dotenv
 import os
 import random
 import questionary
+import pandas as pd
 
 load_dotenv()
+
+# Set the seaborn style
+sns.set_style("whitegrid")
+sns.set_palette("husl")
 
 api = Ossapi(
     client_id=int(os.getenv('OSU_CLIENT_ID')), 
@@ -19,13 +25,13 @@ def generate_colors(n):
     return ["#" + ''.join(random.choices('0123456789ABCDEF', k=6)) for _ in range(n)]
 
 def create_bar_chart(names, pps, save=True, start_at_zero=True):
-    plt.figure(figsize=(8, 5))
-    plt.bar(names, pps, color='skyblue')
+    plt.figure(figsize=(10, 6))
+    data = pd.DataFrame({'Player Name': names, 'PP': pps})
+    sns.barplot(data=data, x='Player Name', y='PP')
     plt.xlabel('Player Name')
     plt.ylabel('PP')
-    plt.title('Player X PP')
+    plt.title('Player PP Distribution')
     plt.xticks(rotation=90)
-    plt.grid(True, linestyle='--', alpha=0.7)
     if start_at_zero:
         plt.ylim(0, max(pps) * 1.1)
     plt.tight_layout()
@@ -35,13 +41,13 @@ def create_bar_chart(names, pps, save=True, start_at_zero=True):
         plt.show()
 
 def create_line_chart(names, pps, save=True, start_at_zero=True):
-    plt.figure(figsize=(8, 5))
-    plt.plot(names, pps, marker='o', linestyle='-', color='green')
+    plt.figure(figsize=(10, 6))
+    data = pd.DataFrame({'Player Name': names, 'PP': pps})
+    sns.lineplot(data=data, x='Player Name', y='PP', marker='o')
     plt.xlabel('Player Name')
     plt.ylabel('PP')
-    plt.title('Player X PP')
+    plt.title('Player PP Trend')
     plt.xticks(rotation=90)
-    plt.grid(True, linestyle='--', alpha=0.7)
     if start_at_zero:
         plt.ylim(0, max(pps) * 1.1)
     plt.tight_layout()
@@ -51,26 +57,27 @@ def create_line_chart(names, pps, save=True, start_at_zero=True):
         plt.show()
 
 def create_pie_chart(names, pps, save=True):
-    plt.figure(figsize=(8, 5))
-    plt.pie(pps, labels=names, autopct="%1.1f%%", colors=generate_colors(len(names)))
-    plt.title('PP Pie Chart')
+    plt.figure(figsize=(10, 6))
+    # Pie charts are not a primary focus in seaborn, so we'll keep using plt for this
+    colors = sns.color_palette("husl", len(names))
+    plt.pie(pps, labels=names, autopct="%1.1f%%", colors=colors)
+    plt.title('PP Distribution')
     if save:
         plt.savefig('pie_chart.png')
     else:
         plt.show()
 
 def create_scatter_plot(names, pps, save=True, start_at_zero=True):
-    plt.figure(figsize=(8, 5))
-    x = np.arange(len(names))
-    plt.scatter(x, pps, color=generate_colors(len(names)), edgecolors='black', s=100)
-    plt.xticks(x, names, rotation=90)
+    plt.figure(figsize=(10, 6))
+    data = pd.DataFrame({'Player Name': names, 'PP': pps})
+    sns.scatterplot(data=data, x='Player Name', y='PP', s=100)
     plt.xlabel('Player Name')
     plt.ylabel('PP')
-    plt.title('PP Scatter Plot')
-    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.title('PP Distribution (Scatter)')
+    plt.xticks(rotation=90)
     if start_at_zero:
         plt.ylim(0, max(pps) * 1.1)
-    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.tight_layout()
     if save:
         plt.savefig('scatter_plot.png')
     else:

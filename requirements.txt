@@ -1,4 +1,6 @@
+seaborn
 matplotlib
+pandas
 ossapi
 numpy
 python-dotenv
