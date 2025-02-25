@@ -10,7 +10,6 @@ import pandas as pd
 
 load_dotenv()
 
-# Set the seaborn style
 sns.set_style("whitegrid")
 sns.set_palette("husl")
 
@@ -57,15 +56,52 @@ def create_line_chart(names, pps, save=True, start_at_zero=True):
         plt.show()
 
 def create_pie_chart(names, pps, save=True):
-    plt.figure(figsize=(10, 6))
-    # Pie charts are not a primary focus in seaborn, so we'll keep using plt for this
-    colors = sns.color_palette("husl", len(names))
-    plt.pie(pps, labels=names, autopct="%1.1f%%", colors=colors)
+    plt.figure(figsize=(15, 8))
+    
+    base_colors = (
+        sns.color_palette("Set3", 12) +
+        sns.color_palette("Dark2", 8) +
+        sns.color_palette("Paired", 12) 
+    )
+    
+    colors = base_colors[:len(names)]
+    
+    patterns = ['/', '\\', 'x', 'o', 'O', '.', '*', '-', '+', '|']
+    patterns = patterns * (len(names) // len(patterns) + 1)
+    patterns = patterns[:len(names)]
+    
+    total = sum(pps)
+    percentages = [pp/total * 100 for pp in pps]
+
+    legend_labels = [f'{name} ({pp:.1f}%)' for name, pp in zip(names, percentages)]
+    
+    patches, _ = plt.pie(
+        pps, 
+        colors=colors,
+        labels=[''] * len(names),
+        startangle=90
+    )
+    
+    for patch, pattern in zip(patches, patterns):
+        patch.set_hatch(pattern)
+    
+    plt.legend(
+        patches,
+        legend_labels,
+        title="Players",
+        loc="center left",
+        bbox_to_anchor=(1, 0.5),
+        fontsize=8
+    )
+    
     plt.title('PP Distribution')
+    plt.axis('equal')
+    
     if save:
-        plt.savefig('pie_chart.png')
+        plt.savefig('pie_chart.png', bbox_inches='tight', dpi=300, pad_inches=0.5)
     else:
         plt.show()
+    plt.close()
 
 def create_scatter_plot(names, pps, save=True, start_at_zero=True):
     plt.figure(figsize=(10, 6))
